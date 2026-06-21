@@ -8,7 +8,7 @@ from textual.binding import Binding
 from textual.widgets import Input, Label, ListView, ListItem
 from textual.containers import Horizontal
 
-TASKS_DIR = Path.home() / ".config" / "nasa-todo"
+TASKS_DIR = Path.home() / ".config" / "endtime"
 TASKS_FILE = TASKS_DIR / "tasks.json"
 
 def parse_task(text):
@@ -87,7 +87,7 @@ class EndtimeApp(App):
         yield ListView(id="task-list")
         with Horizontal(id="bottom-bar"):
             yield Label("[#ff4444]>[/] ", id="prompt-prefix", markup=True)
-            yield Label("AWAITING COMMAND...", id="prompt-label", markup=True)
+            yield Label("AWAITING TASK...", id="prompt-label", markup=True)
             yield Input(id="task-input")
 
     def on_mount(self) -> None:
@@ -105,10 +105,10 @@ class EndtimeApp(App):
             mode_display = "EDIT"
             
         help_tag = r"\[H] hide" if self.show_help else r"\[H] help"
-        line1 = f" [{mode_color}]{mode_display}[/] | {completed_count}/{total} NOMINAL | {help_tag}"
+        line1 = f" [{mode_color}]{mode_display}[/] | {completed_count}/{total} | {help_tag}"
         
         if self.show_help:
-            cmd_text = r"\[j/k]nav \[spc]chk \[i]add \[e]edt \[d]del \[C]clr \[q]quit"
+            cmd_text = r"\[j/k]nav \[spc]check \[i]add \[e]edit \[d]del \[C]clear \[q]quit"
             if self.mode == "INSERT":
                 cmd_text = r"\[enter]submit \[esc]cancel"
             elif self.mode.startswith("CONFIRM"):
@@ -237,7 +237,7 @@ class EndtimeApp(App):
         self.query_one("#task-input", Input).display = False
         lbl = self.query_one("#prompt-label", Label)
         lbl.display = True
-        lbl.update("AWAITING COMMAND...")
+        lbl.update("AWAITING TASK...")
         
         self.query_one("#task-list", ListView).focus()
 

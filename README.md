@@ -1,6 +1,6 @@
 # Endtime (Todo TUI)
 
-A minimalist, keyboard-driven Task Manager for the terminal, designed with a strict "NASA Telemetry / Hacker" aesthetic. Built with Python and [Textual](https://textual.textualize.io/).
+A minimalist, keyboard-driven Task Manager for the terminal. Built with Python and [Textual](https://textual.textualize.io/).
 
 ## Features
 - **Vim-like Keybindings**: Seamlessly navigate your tasks without touching the mouse (`j`/`k` to navigate, `i` to insert, `e` to edit, `d` to delete).
@@ -13,8 +13,8 @@ A minimalist, keyboard-driven Task Manager for the terminal, designed with a str
 
 1. Clone the repository:
    ```bash
-   git clone https://github.com/yourusername/endtime.git
-   cd endtime
+   git clone https://github.com/scintill-a/Endtime.git
+   cd Endtime
    ```
 2. Create a virtual environment and install dependencies:
    ```bash
@@ -30,7 +30,7 @@ Start the HUD:
 python3 endtime.py
 ```
 
-### System Alias (Optional)
+### System Alias 
 To launch Endtime instantly from anywhere in your terminal just by typing `endtime`, add the following bash function to your `~/.bashrc` or `~/.zshrc`:
 
 ```bash
@@ -51,7 +51,8 @@ After adding it, restart your terminal or run `source ~/.bashrc` (or `~/.zshrc`)
 - `Shift+H`: Toggle command guide
 - `q`: Quit application
 
-*Data is automatically saved to `~/.config/nasa-todo/tasks.json`.*
+*Data is automatically saved to `~/.config/endtime/tasks.json`.*
 
 ## License
-MIT
+
+[MIT](LICENSE).
