@@ -1,0 +1,114 @@
+Screen {
+    background: #000000;
+    color: #777777;
+    layout: vertical;
+    scrollbar-color: #333333;
+    scrollbar-color-active: #ff4444;
+    scrollbar-color-hover: #ff4444;
+    scrollbar-background: #000000;
+}
+
+#header {
+    dock: top;
+    width: 100%;
+    height: auto;
+    background: #000000;
+    color: #777777;
+    margin-bottom: 1;
+}
+
+#task-list {
+    background: #000000;
+    height: 1fr;
+    overflow-x: hidden;
+    scrollbar-color: #333333;
+    scrollbar-color-active: #ff4444;
+    scrollbar-color-hover: #ff4444;
+    scrollbar-background: #000000;
+}
+
+CategoryItem {
+    color: #ffffff;
+    background: #000000;
+    padding-top: 1;
+    padding-left: 0;
+    padding-bottom: 0;
+    height: auto;
+}
+
+.category-label {
+    color: #333333;
+    text-style: bold;
+}
+
+TodoItem {
+    background: #000000;
+    color: #777777;
+    padding-left: 0;
+    padding-right: 0;
+    height: auto;
+}
+
+TodoItem:focus {
+    /* Focus doesn't alter styling anymore, handled by python formatting */
+    background: #000000;
+}
+
+TodoItem:focus Label {
+    color: #ffffff;
+}
+
+TodoItem Horizontal {
+    height: auto;
+}
+
+TodoItem #task-status {
+    width: 6;
+    height: auto;
+}
+
+TodoItem #task-content {
+    width: 1fr;
+    height: auto;
+}
+
+TodoItem.--highlight {
+    background: #111111;
+}
+
+TodoItem.-completed > #label {
+    color: #333333;
+    text-style: strike;
+}
+
+#bottom-bar {
+    dock: bottom;
+    height: 1;
+    margin-top: 1;
+    background: #000000;
+}
+
+#prompt-prefix {
+    width: 2;
+    color: #ff4444;
+}
+
+#prompt-label {
+    color: #777777;
+}
+
+#task-input {
+    background: #000000;
+    color: #ffffff;
+    border: none;
+    padding: 0;
+    width: 1fr;
+}
+
+#task-input:focus {
+    border: none;
+}
+
+#task-input > .input--placeholder {
+    color: #333333;
+}
