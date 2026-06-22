@@ -44,6 +44,7 @@ After adding it, restart your terminal or run `source ~/.bashrc` (or `~/.zshrc`)
 
 ### Controls (Normal Mode)
 - `j` / `k`: Navigate tasks
+- `Shift+J` / `Shift+K`: Move task down/up within its tag
 - `Space`: Check/Uncheck task
 - `i`: Insert new task
 - `e`: Edit selected task

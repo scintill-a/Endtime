@@ -63,6 +63,8 @@ class EndtimeApp(App):
     BINDINGS = [
         Binding("j", "cursor_down", "Down", show=False),
         Binding("k", "cursor_up", "Up", show=False),
+        Binding("J", "move_down", "Move Down", show=False),
+        Binding("K", "move_up", "Move Up", show=False),
         Binding("space", "toggle", "Toggle", show=False),
         Binding("enter", "toggle", "Toggle", show=False),
         Binding("d", "delete_task", "Delete", show=False),
@@ -111,7 +113,7 @@ class EndtimeApp(App):
         line1 = f" [{mode_color}]{mode_display}[/] | {completed_count}/{total} | {help_tag}"
         
         if self.show_help:
-            cmd_text = r"\[j/k]nav \[spc]check \[i]add \[e]edit \[d]del \[C]clear \[q]quit"
+            cmd_text = r"\[j/k]nav \[J/K]move \[spc]check \[i]add \[e]edit \[d]del \[C]clear \[q]quit"
             if self.mode == "INSERT":
                 cmd_text = r"\[enter]submit \[esc]cancel"
             elif self.mode.startswith("CONFIRM"):
@@ -286,6 +288,63 @@ class EndtimeApp(App):
             task_list.action_cursor_up()
             if task_list.index == 1:
                 task_list.scroll_home()
+
+    def _swap_tasks_in_group(self, task_id, direction):
+        idx = -1
+        for i, t in enumerate(self.tasks_data):
+            if t["id"] == task_id:
+                idx = i
+                break
+        
+        if idx == -1: return False
+
+        task = self.tasks_data[idx]
+        task_tag, _ = parse_task(task["text"])
+        is_completed = task.get("completed", False)
+
+        target_idx = -1
+        step = 1 if direction == 1 else -1
+        curr = idx + step
+        
+        while 0 <= curr < len(self.tasks_data):
+            other = self.tasks_data[curr]
+            other_tag, _ = parse_task(other["text"])
+            if other.get("completed", False) == is_completed and other_tag == task_tag:
+                target_idx = curr
+                break
+            curr += step
+
+        if target_idx != -1:
+            self.tasks_data[idx], self.tasks_data[target_idx] = self.tasks_data[target_idx], self.tasks_data[idx]
+            self.save_tasks()
+            return True
+        return False
+
+    def action_move_up(self):
+        if self.mode == "NORMAL":
+            task_list = self.query_one("#task-list", ListView)
+            if task_list.index is not None and task_list.children:
+                item = task_list.children[task_list.index]
+                if isinstance(item, TodoItem):
+                    if self._swap_tasks_in_group(item.task_id, -1):
+                        self.refresh_list(keep_index=False)
+                        for i, child in enumerate(task_list.children):
+                            if getattr(child, "task_id", None) == item.task_id:
+                                task_list.index = i
+                                break
+
+    def action_move_down(self):
+        if self.mode == "NORMAL":
+            task_list = self.query_one("#task-list", ListView)
+            if task_list.index is not None and task_list.children:
+                item = task_list.children[task_list.index]
+                if isinstance(item, TodoItem):
+                    if self._swap_tasks_in_group(item.task_id, 1):
+                        self.refresh_list(keep_index=False)
+                        for i, child in enumerate(task_list.children):
+                            if getattr(child, "task_id", None) == item.task_id:
+                                task_list.index = i
+                                break
 
     def action_toggle_help(self):
         if self.mode == "NORMAL":
