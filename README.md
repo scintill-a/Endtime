@@ -46,6 +46,7 @@ After adding it, restart your terminal or run `source ~/.bashrc` (or `~/.zshrc`)
 - `j` / `k`: Navigate tasks
 - `Shift+J` / `Shift+K`: Move task down/up within its tag
 - `Space`: Check/Uncheck task
+- `f`: Toggle task focus (importance)
 - `i`: Insert new task
 - `e`: Edit selected task
 - `d`: Delete selected task

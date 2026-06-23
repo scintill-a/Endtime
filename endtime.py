@@ -28,22 +28,28 @@ class CategoryItem(ListItem):
         yield Label(f" --- {self.text} ---", classes="category-label")
 
 class TodoItem(ListItem):
-    def __init__(self, task_id: str, original_text: str, display_text: str, completed: bool = False, streak: int = 0, **kwargs):
+    def __init__(self, task_id: str, original_text: str, display_text: str, completed: bool = False, streak: int = 0, focused: bool = False, **kwargs):
         super().__init__(**kwargs)
         self.task_id = task_id
         self.original_text = original_text
         self.display_text = display_text
         self.completed = completed
         self.streak = streak
+        self.focused = focused
         self.is_highlighted = False
 
     def compose(self) -> ComposeResult:
         prefix = "[#ff4444]>[/] " if self.is_highlighted else "  "
         status = r"[#ff4444]\[X][/]" if self.completed else r"[#ffffff]\[ ][/]"
         streak_text = f" [#ff4444]·[/] {self.streak}" if self.streak > 0 else ""
+        
+        content_text = self.display_text
+        if self.focused and not self.completed:
+            content_text = f"[#ff4444][b]{content_text}[/b][/]"
+
         with Horizontal():
             yield Label(f"{prefix}{status} ", id="task-status", markup=True)
-            yield Label(self.display_text + streak_text, id="task-content", markup=True)
+            yield Label(content_text + streak_text, id="task-content", markup=True)
 
     def set_highlighted(self, is_high: bool):
         self.is_highlighted = is_high
@@ -66,6 +72,7 @@ class EndtimeApp(App):
         Binding("J", "move_down", "Move Down", show=False),
         Binding("K", "move_up", "Move Up", show=False),
         Binding("space", "toggle", "Toggle", show=False),
+        Binding("f", "toggle_focus", "Focus", show=False),
         Binding("enter", "toggle", "Toggle", show=False),
         Binding("d", "delete_task", "Delete", show=False),
         Binding("e", "edit_task", "Edit", show=False),
@@ -113,7 +120,7 @@ class EndtimeApp(App):
         line1 = f" [{mode_color}]{mode_display}[/] | {completed_count}/{total} | {help_tag}"
         
         if self.show_help:
-            cmd_text = r"\[j/k]nav \[J/K]move \[spc]check \[i]add \[e]edit \[d]del \[C]clear \[q]quit"
+            cmd_text = r"\[j/k]nav \[J/K]move \[spc]check \[f]focus \[i]add \[e]edit \[d]del \[C]clear"
             if self.mode == "INSERT":
                 cmd_text = r"\[enter]submit \[esc]cancel"
             elif self.mode.startswith("CONFIRM"):
@@ -201,7 +208,8 @@ class EndtimeApp(App):
             task_list.append(CategoryItem(tag))
             for t, display_text in groups[tag]:
                 streak = t.get("streak", 0) if tag == "DAILY" else 0
-                item = TodoItem(t["id"], t["text"], display_text, t["completed"], streak)
+                focused = t.get("focused", False)
+                item = TodoItem(t["id"], t["text"], display_text, t["completed"], streak, focused)
                 task_list.append(item)
 
         if completed:
@@ -209,7 +217,8 @@ class EndtimeApp(App):
             for t in completed:
                 tag, display_text = parse_task(t["text"])
                 streak = t.get("streak", 0) if tag == "DAILY" else 0
-                item = TodoItem(t["id"], t["text"], display_text, t["completed"], streak)
+                focused = t.get("focused", False)
+                item = TodoItem(t["id"], t["text"], display_text, t["completed"], streak, focused)
                 item.add_class("-completed")
                 task_list.append(item)
             
@@ -374,6 +383,18 @@ class EndtimeApp(App):
                         self.refresh_list(keep_index=True)
         elif self.mode in ("CONFIRM_DELETE", "CONFIRM_SWEEP"):
             self.action_confirm_yes()
+
+    def action_toggle_focus(self):
+        if self.mode == "NORMAL":
+            task_list = self.query_one("#task-list", ListView)
+            if task_list.index is not None and task_list.children:
+                item = task_list.children[task_list.index]
+                if isinstance(item, TodoItem):
+                    task_data = self.get_task_by_id(item.task_id)
+                    if task_data:
+                        task_data["focused"] = not task_data.get("focused", False)
+                        self.save_tasks()
+                        self.refresh_list(keep_index=True)
 
     def action_delete_task(self):
         if self.mode == "NORMAL":

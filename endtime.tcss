@@ -76,7 +76,7 @@ TodoItem.--highlight {
     background: #111111;
 }
 
-TodoItem.-completed > #label {
+TodoItem.-completed Label {
     color: #333333;
     text-style: strike;
 }
